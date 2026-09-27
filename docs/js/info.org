@@ -1,0 +1,10 @@
+#+TITLE:
+#+STARTUP: content indent
+
+* chat
+https://chat.qwen.ai/c/49aa1373-355a-4705-a38a-d9c8c2801403
+
+* comandos
+http://localhost:8000/#centro_sonoro=250&dispersion=3&codebar_modo=code314
+http://localhost:8000/#audio_volumen=0.6&ritmo_ms_modulo=35
+http://localhost:8000/#script=hola%0Asonido%0A_state

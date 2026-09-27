@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>text-cb-sound (web-version)</title>
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="js/app.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&display=swap" rel="stylesheet" >
+</head>
+<body>
+  <header class="topbar">
+    <div class="title">text-cb-sound</div>
+
+    <div class="actions">
+        <button id="btn-rec" type="button">Rec</button>
+      <button id="btn-stop" type="button">Stop</button>
+      <button id="btn-clear" type="button">Clear</button>
+      <button id="btn-settings" type="button">Settings</button>
+      <button id="btn-script" type="button">Script</button>
+      <button id="btn-share" type="button">Share URL</button>
+      <button id="btn-help" type="button">Help</button>
+      <button id="btn-tutorial" type="button">Tutorial</button>
+    </div>
+  </header>
+
+  <main id="terminal">
+    <div id="output" aria-live="polite"></div>
+
+    <div class="input-line">
+        <span class="prompt">-&gt;</span>
+      <input
+        id="input"
+        type="text"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        placeholder="_help"
+      >
+    </div>
+  </main>
+
+  <dialog id="help-dialog">
+    <div class="dialog-title">Ayuda</div>
+
+    <div class="dialog-body">
+<pre>
+Comandos:
+  _state     muestra estado global
+  _reset     restaura la última configuración cargada
+  _reload    recarga configuración guardada / URL
+  _help      abre esta ayuda
+  _stop      detiene reproducción
+  _rec       inicia grabación; un segundo _rec detiene y descarga
+
+Operadores:
+  ! / !      centro_sonoro suma / resta
+  + / -      dispersión suma / resta
+  ) / (      suavidad_rítmica suma / resta
+  } / {      lateralidad suma / resta
+  ] / [      volumen suma / resta
+  > / <      ritmo_ms_modulo suma / resta
+  #          inversión ritmica
+  ~          silencio global
+  @          modelo de onda
+
+Tipos de onda (@):
+  0:square
+  1:sine
+  2:saw
+  3:triangle
+  4:wnoise
+  5:bnoise
+  6:rnoise
+
+Comentarios:
+  ;;token    ignora solo ese token
+  ;;         ignora resto de linea
+
+Atajos:
+  Enter            ejecutar linea
+  ArrowUp/Down     historial
+  Ctrl-P / Ctrl-N  historial
+  Arriba / Abajo   historial
+  Ctrl-A           inicio de linea
+  Ctrl-E           fin de linea
+  Ctrl-U           borrar hasta inicio
+  Ctrl-K           borrar hasta fin
+  Ctrl-Backspace   borrar palabra anterior
+  Ctrl-C           stop
+  Tab              autocompletar comandos
+
+IMPORTANTE: Algunos atajos pueden estar reservados por el navegador.
+</pre>
+    </div>
+
+    <div class="dialog-actions">
+      <button id="help-close" type="button">Cerrar</button>
+    </div>
+  </dialog>
+
+  <dialog id="settings-dialog">
+    <div class="dialog-title">Settings</div>
+
+    <form id="settings-form">
+      <div class="settings-grid">
+        <label>
+          centro_sonoro
+          <input id="s-centro" type="number" step="any">
+        </label>
+
+        <label>
+          dispersion
+          <input id="s-dispersion" type="number" step="1">
+        </label>
+
+        <label>
+          suavidad_ritmica
+          <input id="s-suavidad" type="number" step="1" min="0">
+        </label>
+
+        <label class="checkbox">
+          inversion_ritmica
+          <input id="s-inversion" type="checkbox">
+        </label>
+
+        <label>
+          lateralidad_sonora
+          <input id="s-lateral" type="range" min="-9" max="9" step="1">
+          <span id="s-lateral-val"></span>
+        </label>
+
+        <label>
+          ritmo_ms_modulo
+          <input id="s-tempo" type="number" step="1" min="1">
+        </label>
+
+        <label>
+          modelo_onda
+          <select id="s-wave">
+            <option value="square">square</option>
+            <option value="sine">sine</option>
+            <option value="saw">saw</option>
+            <option value="triangle">triangle</option>
+            <option value="wnoise">wnoise</option>
+            <option value="bnoise">bnoise</option>
+            <option value="rnoise">rnoise</option>
+          </select>
+        </label>
+
+        <label>
+          audio_volumen
+          <input id="s-volumen" type="range" min="0" max="1" step="0.01">
+          <span id="s-volumen-val"></span>
+        </label>
+
+        <label>
+          audio_seed
+          <input id="s-seed" type="number" step="1" min="0">
+        </label>
+
+        <label>
+          frecuencia_min
+          <input id="s-fmin" type="number" step="1" min="1">
+        </label>
+
+        <label>
+          frecuencia_max
+          <input id="s-fmax" type="number" step="1" min="1">
+        </label>
+
+        <label>
+          codebar_modo
+          <select id="s-codebar">
+            <option value="code128">code128</option>
+            <option value="code314">code314</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="dialog-actions">
+        <button id="settings-reset" type="button">Defaults</button>
+        <button id="settings-close" type="button">Cancelar</button>
+        <button type="submit">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="script-dialog">
+    <div class="dialog-title">Script</div>
+
+    <div class="dialog-body">
+      <textarea id="script-text" placeholder="hola
+sonido
+_state"></textarea>
+    </div>
+
+    <div class="dialog-actions">
+        <label id="script-import" class="button" role="button" tabindex="0">Importar</label>
+      <button id="script-export" type="button">Exportar</button>
+      <button id="script-close" type="button">Cerrar</button>
+      <button id="script-run" type="button">Ejecutar</button>
+    </div>
+  </dialog>
+
+<dialog id="tutorial-dialog">
+  <div class="dialog-title">Tutorial</div>
+
+  <div class="dialog-body tutorial-body">
+    <p>
+      Cada palabra se sintetiza cuando aparece un espacio, tab o enter.
+      Las letras ASCII son la materia sonora. Los números y signos
+      modifican parametros del sonido.
+    </p>
+
+    <p>
+      Si una palabra no tiene letras, los modificadores cambian el estado
+      global. Si una palabra tiene letras, los modificadores son locales.
+      Varios modificadores locales son posicionales: afectan a las letras
+      que aparecen despues de ellos.
+    </p>
+
+    <section class="tutorial-example">
+      <h3>Básico</h3>
+      <pre class="example-text">hola
+sonido</pre>
+      <div class="example-actions">
+        <button type="button" class="run-example">Ejecutar</button>
+      </div>
+    </section>
+
+    <section class="tutorial-example">
+      <h3>Modificadores globales</h3>
+      <pre class="example-text">;; sube centro global
+10!
+alto
+
+;; restaura centro
+10&iexcl;
+normal
+
+;; sube dispersion global
+3+
+dispersa
+
+;; restaura dispersión
+3-</pre>
+      <div class="example-actions">
+        <button type="button" class="run-example">Ejecutar</button>
+      </div>
+    </section>
+
+    <section class="tutorial-example">
+      <h3>Dispersión local posicional</h3>
+      <pre class="example-text">;; sin modificador local
+sonidos
+
+;; dispersion local 4+ aplicada a las letras siguientes
+4+sonidos</pre>
+      <div class="example-actions">
+        <button type="button" class="run-example">Ejecutar</button>
+      </div>
+    </section>
+
+    <section class="tutorial-example">
+      <h3>Volumen local en cascada</h3>
+      <pre class="example-text">;; palabra con volumen normal
+normal
+
+;; baja volumen local al principio y lo restaura después
+[10bajo10]normal</pre>
+      <div class="example-actions">
+        <button type="button" class="run-example">Ejecutar</button>
+      </div>
+    </section>
+
+    <section class="tutorial-example">
+      <h3>Lateralidad e inversión</h3>
+      <pre class="example-text">;; lateralidad por letra
+a{b}c
+
+;; inversion ritmica por tramos
+al#ter#nos</pre>
+      <div class="example-actions">
+        <button type="button" class="run-example">Ejecutar</button>
+      </div>
+    </section>
+
+    <section class="tutorial-example">
+      <h3>Tempo global</h3>
+      <pre class="example-text">;; tempo mas lento
+5&gt;
+lento
+
+;; restaurar tempo
+5&lt;
+normal</pre>
+      <div class="example-actions">
+        <button type="button" class="run-example">Ejecutar</button>
+      </div>
+    </section>
+
+    <section class="tutorial-example">
+      <h3>Tipos de onda globales</h3>
+      <pre class="example-text">0@
+cuadrada
+
+1@
+seno
+
+2@
+sierra
+
+@
+default</pre>
+      <div class="example-actions">
+        <button type="button" class="run-example">Ejecutar</button>
+      </div>
+    </section>
+
+    <section class="tutorial-example">
+      <h3>Silencio</h3>
+      <pre class="example-text">hola
+4~
+sonido</pre>
+      <div class="example-actions">
+        <button type="button" class="run-example">Ejecutar</button>
+      </div>
+    </section>
+
+    <section class="tutorial-example">
+      <h3>Combinado</h3>
+      <pre class="example-text">;; cambios globales temporales
+2!
+1+
+1@sine
+
+hola
+[10suave10]normal
+4~
+sonido
+
+;; restaurar
+2&iexcl;
+1-
+@</pre>
+      <div class="example-actions">
+        <button type="button" class="run-example">Ejecutar</button>
+      </div>
+    </section>
+
+    <p class="muted-note">
+
+    </p>
+  </div>
+
+  <div class="dialog-actions">
+    <button id="tutorial-close" type="button">Cerrar</button>
+  </div>
+</dialog>
+
+  <div id="drop-overlay">
+    <div>Soltar script .txt</div>
+  </div>
+
+  <input id="file-input" type="file" accept=".txt,text/plain" class="visually-hidden" >
+</body>
+</html>
