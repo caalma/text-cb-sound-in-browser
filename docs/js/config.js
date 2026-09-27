@@ -14,16 +14,16 @@ export const CODEBAR_MODES = [
 ];
 
 export const DEFAULT_SETTINGS = {
-  centro_sonoro: 220,
-  dispersion: 1,
-  suavidad_ritmica: 0,
+  centro_sonoro: 222,
+  dispersion: 3,
+  suavidad_ritmica: 30,
   inversion_ritmica: 0,
   lateralidad_sonora: 0,
-  ritmo_ms_modulo: 20,
+  ritmo_ms_modulo: 150,
   modelo_onda: 'sine',
-  audio_volumen: 0.95,
+  audio_volumen: 0.90,
   audio_seed: 12345,
-  frecuencia_min: 20,
+  frecuencia_min: 40,
   frecuencia_max: 20000,
   codebar_modo: 'code128'
 };
