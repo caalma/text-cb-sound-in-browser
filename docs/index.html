@@ -235,19 +235,19 @@ sonido</pre>
     <section class="tutorial-example">
       <h3>Modificadores globales</h3>
       <pre class="example-text">;; sube centro global
-10!
+400!
 alto
 
 ;; restaura centro
-10&iexcl;
+400¡
 normal
 
 ;; sube dispersion global
-3+
+30+
 dispersa
 
 ;; restaura dispersión
-3-</pre>
+30-</pre>
       <div class="example-actions">
         <button type="button" class="run-example">Ejecutar</button>
       </div>
@@ -259,7 +259,7 @@ dispersa
 sonidos
 
 ;; dispersion local 4+ aplicada a las letras siguientes
-4+sonidos</pre>
+300+sonidos</pre>
       <div class="example-actions">
         <button type="button" class="run-example">Ejecutar</button>
       </div>
@@ -271,7 +271,7 @@ sonidos
 normal
 
 ;; baja volumen local al principio y lo restaura después
-10[bajo10]normal</pre>
+30[bajo30]normal</pre>
       <div class="example-actions">
         <button type="button" class="run-example">Ejecutar</button>
       </div>
@@ -280,7 +280,7 @@ normal
     <section class="tutorial-example">
       <h3>Lateralidad e inversión</h3>
       <pre class="example-text">;; lateralidad por letra
-a{b}c
+a10{b10}c
 
 ;; inversion ritmica por tramos
 al#ter#nos</pre>
@@ -291,13 +291,13 @@ al#ter#nos</pre>
 
     <section class="tutorial-example">
       <h3>Tempo global</h3>
-      <pre class="example-text">;; tempo mas lento
-5>
-lento
+      <pre class="example-text">;; tempo más lento
+100>
+mixtura
 
 ;; restaurar tempo
-5<
-normal</pre>
+100<
+mixtura</pre>
       <div class="example-actions">
         <button type="button" class="run-example">Ejecutar</button>
       </div>
@@ -334,19 +334,15 @@ sonido</pre>
     <section class="tutorial-example">
       <h3>Combinado</h3>
       <pre class="example-text">;; cambios globales temporales
-2!
-1+
+500! 100+
 1@sine
-
 hola
 10)suave10(normal
 4~
 sonido
 
 ;; restaurar
-2¡
-1-
-@</pre>
+500¡ 100- @</pre>
       <div class="example-actions">
         <button type="button" class="run-example">Ejecutar</button>
       </div>
